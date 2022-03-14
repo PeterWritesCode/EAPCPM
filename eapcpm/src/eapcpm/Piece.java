@@ -36,16 +36,11 @@ public class Piece {
         this.BotRight = BotRight;
         this.BotLeft = BotLeft;
 
-        this.TopTaken = false;
-        this.BottomTaken = false;
-        this.RightTaken = false;
-        this.LeftTaken = false;
-        
         this.Placed = false;
         
-        this.Rleft = new Piece(BotLeft, TopLeft, TopRight, BotRight, true);
-        this.Rright = new Piece(BotRight,BotLeft, TopLeft, TopRight, true);
-        this.Rdown = new Piece(TopRight,BotRight,BotLeft, TopLeft, true);
+        this.Rleft = new Piece(BotLeft, TopLeft, TopRight, BotRight, false);
+        this.Rright = new Piece(BotRight,BotLeft, TopLeft, TopRight, false);
+        this.Rdown = new Piece(TopRight,BotRight,BotLeft, TopLeft, false);
     }
     
     public Piece(int TopLeft, int TopRight, int BotRight, int BotLeft, boolean coiso) {
@@ -53,24 +48,10 @@ public class Piece {
         this.TopRight = TopRight;
         this.BotRight = BotRight;
         this.BotLeft = BotLeft;
-
-        this.TopTaken = false;
-        this.BottomTaken = false;
-        this.RightTaken = false;
-        this.LeftTaken = false;
         
-        this.Placed = false;
+        this.Placed = coiso;
     }
     
-    public int getN(){
-        return N;
-    }
-    public int getR(){
-        return R;
-    }
-    public int getC(){
-        return C;
-    }
     
     public boolean getPlaced(){
         return Placed;
