@@ -14,48 +14,55 @@ import java.util.ArrayList;
  * @author PeterIsMyName
  */
 
-class Piece {
+/*class Piece {
 
-    int TopLeft;
-    int TopRight;
-    int BotRight;
-    int BotLeft;
-
-    boolean TopTaken;
-    boolean BottomTaken;
-    boolean RightTaken;
-    boolean LeftTaken;
+    int[] Up;
+    int[] Left = new int[4];
+    int[] Down = new int[4];
+    int[] Right = new int[4];
     
     boolean Placed;
     
-    int N, R, C;
-    
-    Piece Rleft;
-    Piece Rright;
-    Piece Rdown;
-    
-    public Piece(int TopLeft, int TopRight, int BotRight, int BotLeft) {
-        this.TopLeft = TopLeft;
-        this.TopRight = TopRight;
-        this.BotRight = BotRight;
-        this.BotLeft = BotLeft;
+    public Piece(int[] straight) {
+        this.Up = straight;
+
+        this.Left[0] = Up[1];
+        this.Left[1] = Up[2];
+        this.Left[2] = Up[3];
+        this.Left[3] = Up[0];
+
+        this.Down[0] = Up[2];
+        this.Down[1] = Up[3];
+        this.Down[2] = Up[0];
+        this.Down[3] = Up[1];
+
+
+        this.Right[0] = Up[3];
+        this.Right[1] = Up[0];
+        this.Right[2] = Up[1];
+        this.Right[3] = Up[2];
 
         this.Placed = false;
         
-        this.Rleft = new Piece(BotLeft, TopLeft, TopRight, BotRight, false);
-        this.Rright = new Piece(BotRight,BotLeft, TopLeft, TopRight, false);
-        this.Rdown = new Piece(TopRight,BotRight,BotLeft, TopLeft, false);
+
+    }
+
+    public void setUp(int[] Up){
+        this.Up = Up;
+    }
+    public void setLeft(int[] Left){
+        this.Left = Left;
+    }
+    public void setDown(int[] Down){
+        this.Down = Down;
+    }
+    public void setRight(int[] Right){
+        this.Right = Right;
     }
     
-    public Piece(int TopLeft, int TopRight, int BotRight, int BotLeft, boolean coiso) {
-        this.TopLeft = TopLeft;
-        this.TopRight = TopRight;
-        this.BotRight = BotRight;
-        this.BotLeft = BotLeft;
-        
-        this.Placed = coiso;
+    public Piece getPiece(){
+        return this;
     }
-    
     
     public boolean getPlaced(){
         return Placed;
@@ -66,46 +73,23 @@ class Piece {
     public void setNotPlaced(){
         this.Placed = false;
     }
-    
-    public void setTopLeft(int TopLeft) {
-        this.TopLeft = TopLeft;
-    }
-    public void setTopRight(int TopRight) {
-        this.TopRight = TopRight;
-    }
-    public void setBotRight(int BotRight) {
-        this.BotRight = BotRight;
-    }
-    public void setBotLeft(int BotLeft) {
-        this.BotLeft = BotLeft;
-    }
-    public int getTopLeft() {
-        return TopLeft;
-    }
-    public int getTopRight() {
-        return TopRight;
-    }
-    public int getBotRight() {
-        return BotRight;
-    }
-    public int getBotLeft() {
-        return BotLeft;
-    }
-
-    
-    
-    
 
     @Override
     public String toString() {
-        return (this.getTopLeft() + " " + this.getTopRight() + "\n"
-                + this.getBotLeft() + " " + this.getBotRight() + "\n");
+        return (this.Up[0] + " " + this.Up[1] + "\n"
+                + this.Up[2] + " " + this.Up[3] + "\n");
     }
-}
+}*/
 
 public class Eapcpm {
-
-    public static void printPieces(Piece[][] Tabuleiro){
+    //numeros: array 0-999 
+    static void contaNumeros(int[] arrayInts, int[] numeros){
+        
+        for(int numero : arrayInts){
+            numeros[numero] += 1;  
+        }
+    }
+    static void printPieces(int[][][] Tabuleiro){
         int linhas = Tabuleiro.length;
         int colunas = Tabuleiro[0].length;
         String toPrint = "";
@@ -113,11 +97,15 @@ public class Eapcpm {
         for(int i = 0; i<linhas; i++){
             for(int j = 0; j<colunas; j++){
    
-                toPrint += Tabuleiro[i][j].getTopLeft() + " " + Tabuleiro[i][j].getTopRight();
-                toPrint += "\t";
-
-                toPrintLower += Tabuleiro[i][j].getBotLeft() + " " + Tabuleiro[i][j].getBotRight();
-                toPrintLower += "\t";
+                toPrint += Tabuleiro[i][j][0] + " " + Tabuleiro[i][j][1];
+                if(j < colunas-1){
+                    toPrint+= "  ";
+                }
+                
+                toPrintLower += Tabuleiro[i][j][3] + " " + Tabuleiro[i][j][2];
+                if(j < colunas-1){
+                    toPrintLower+= "  ";
+                }
  
             }
             
@@ -125,10 +113,15 @@ public class Eapcpm {
             System.out.println(toPrintLower);
             toPrint = "";
             toPrintLower = "";
+            if(i < linhas-1){
+            System.out.print("\n");
+            }
         }
+        
+        
     }
     
-    public static ArrayList<Integer> findCompatibles(int one, int two, HashMap<int[],ArrayList<Integer>> compatibleKeys, ArrayList<Piece> PieceArray, boolean firstC){
+    static ArrayList<Integer> findCompatibles(int one, int two, HashMap<int[],ArrayList<Integer>> compatibleKeys, ArrayList<int[][]> PieceArray, boolean firstC){
         int[] key = new int[2];
         key[0] = one;
         key[1] = two;
@@ -140,27 +133,18 @@ public class Eapcpm {
             ArrayList<Integer> tempArray = new ArrayList<>();
             for(int i = 0; i<PieceArray.size(); i++){
                // System.out.println("Peca: " + i + "tem: " + PieceArray.get(i).getPlaced());
-                Piece temp = PieceArray.get(i);
+                
                 for(int j = 0; j < 4; j++){
-
-                    if(j == 1){
-                       
-                        temp = PieceArray.get(i).Rright;
-                    }
-                    if(j == 2){
-                        temp = PieceArray.get(i).Rdown;
-                    }
-                    if(j == 3){
-                        temp = PieceArray.get(i).Rleft;
-                    }
+                    int[] temp = PieceArray.get(i)[j];
+                    
                     //System.out.println("Comparing with: \n" + temp);
                     if(firstC){
-                        if((key[0] == temp.getTopLeft()) && (key[1] == temp.getTopRight()) && (tempArray.indexOf(i) == -1)){
+                        if((key[0] == temp[0]) && (key[1] == temp[1]) && (tempArray.indexOf(i) == -1)){
                             //System.out.println("Added!1");
                             tempArray.add(i);
                         }
                     }
-                    else if((key[0] == temp.getTopLeft()) && (key[1] == temp.getBotLeft()) && (tempArray.indexOf(i) == -1)){
+                    else if((key[0] == temp[0]) && (key[1] == temp[3]) && (tempArray.indexOf(i) == -1)){
                         //System.out.println("Added!2" + i);
                         tempArray.add(i);
                     }
@@ -170,7 +154,7 @@ public class Eapcpm {
             return compatibleKeys.get(key);
         }
     }
-    public static int ComparePieces(Piece first, ArrayList<Piece> PieceArray, Piece[][] Tabuleiro, int LastR, int LastC, HashMap<int[],ArrayList<Integer>> compatibleKeys) {
+    static int ComparePieces(int[][] first, int indexFirst, ArrayList<int[][]> PieceArray, int[][][] Tabuleiro, int LastR, int LastC, HashMap<int[],ArrayList<Integer>> compatibleKeys) {
         //System.out.println("entrie na funcao de novo, estamos nesta linha e coluna:" +LastR + " " + LastC );
         
         int row = Tabuleiro.length;
@@ -188,44 +172,34 @@ public class Eapcpm {
         else{
             LastC++;
         }
-        int comoChegueiAqui = 0;
         //System.out.println("LastR: " + LastR + "\n LastC:" + LastC);
         if (LastR == 0) {
             //System.out.println("If para a primeira linha");
-            comoChegueiAqui = 1;
-            ArrayList<Integer> tempCompatible = findCompatibles(first.getTopRight(),first.getBotRight(),compatibleKeys,PieceArray,false);
+            ArrayList<Integer> tempCompatible = findCompatibles(first[indexFirst][1],first[indexFirst][2],compatibleKeys,PieceArray,false);
             //System.out.println("TempCompatible dentro do LastR == 0" + tempCompatible);
-            for (Integer tempCompatibleIndex : tempCompatible) {
-                Piece temp = PieceArray.get(tempCompatibleIndex);
-                if(!temp.getPlaced()){
-                    for(int i = 0; i<4; i++){
-                        if(i == 1){
-                            temp = PieceArray.get(tempCompatibleIndex).Rleft;
+            for (int i = 0; i<tempCompatible.size();i++) {
+                int[][] AllPiece = PieceArray.get(i);
+                int[] temp = AllPiece[indexFirst];
+                if(AllPiece[4][0] == 0){
+                    
+                    if((first[indexFirst][1] == temp[0]) && (first[indexFirst][2] == temp[3])){
+                        Tabuleiro[LastR][LastC] = temp;
+
+
+                        AllPiece[4][0] = 1;
+                        
+                        //System.out.println("Coloquei a peca. \n" + temp + "\nAo lado da peca" + first);
+                        //System.out.println("Vou enviar para a funcao de novo, Linha: " + LastR);
+                        int resultado = ComparePieces(PieceArray.get(i), i, PieceArray ,Tabuleiro, LastR, LastC,compatibleKeys);
+                        if(resultado == 1){
+                            return 1;
                         }
-                        if(i == 2){
-                            temp = PieceArray.get(tempCompatibleIndex).Rright;
-                        }
-                        if(i == 3){
-                            temp = PieceArray.get(tempCompatibleIndex).Rdown;
-                        }
-                        if((first.getTopRight() == temp.getTopLeft()) && (first.getBotRight() == temp.getBotLeft())){
-                            Tabuleiro[LastR][LastC] = temp;
+                        else{
+                            AllPiece[4][0] = 1;
                             
-                            
-                            PieceArray.get(tempCompatibleIndex).setPlaced();
-                            temp.setPlaced();
-                            //System.out.println("Coloquei a peca. \n" + temp + "\nAo lado da peca" + first);
-                            //System.out.println("Vou enviar para a funcao de novo, Linha: " + LastR);
-                            int resultado = ComparePieces(temp, PieceArray ,Tabuleiro, LastR, LastC,compatibleKeys);
-                            if(resultado == 1){
-                                return 1;
-                            }
-                            else{
-                                PieceArray.get(tempCompatibleIndex).setNotPlaced();
-                                temp.setNotPlaced();
-                            }
-                        }   
-                    }
+                        }
+                    }   
+                    
                 }
             }
         }
@@ -235,72 +209,62 @@ public class Eapcpm {
             if(LastC == 0 && LastR != 0){
                 //System.out.println("Primeira Coluna da nova Row");
                 
-                tempCompatible = findCompatibles(Tabuleiro[LastR-1][0].getBotLeft(),Tabuleiro[LastR-1][0].getBotRight(),compatibleKeys,PieceArray,true);
+                tempCompatible = findCompatibles(Tabuleiro[LastR-1][0][3],Tabuleiro[LastR-1][0][2],compatibleKeys,PieceArray,true);
                 //System.out.println(tempCompatible.size());
             }
             else{
                 //System.out.println("DE NOVO NO ELSE");
-                tempCompatible = findCompatibles(first.getTopRight(),first.getBotRight(),compatibleKeys,PieceArray,false);
+                tempCompatible = findCompatibles(first[indexFirst][1],first[indexFirst][2],compatibleKeys,PieceArray,false);
             }   
             
             
-            for(Integer tempCompatibleIndex : tempCompatible){
+            for(int i = 0; i<tempCompatible.size();i++){
                 //System.out.println("Entrei no for de compatibles");
-                Piece temp = PieceArray.get(tempCompatibleIndex);
-                //System.out.println("Placed or not: " + temp.getPlaced());
-                if(!temp.getPlaced()){
+                int[][] AllPiece = PieceArray.get(i);
+                int[] temp = AllPiece[indexFirst];
+                if(AllPiece[4][0] == 0){
                     //System.out.println("Entrei no if de placed");
-                    for(int i = 0; i<4; i++){
-                        if(i == 1){
-                            temp = PieceArray.get(tempCompatibleIndex).Rleft;
-                        }
-                        if(i == 2){
-                            temp = PieceArray.get(tempCompatibleIndex).Rright;
-                        }
-                        if(i == 3){
-                            temp = PieceArray.get(tempCompatibleIndex).Rdown;
-                        }
-                        
-                        if((Tabuleiro[LastR-1][LastC].getBotRight() == temp.getTopRight()) && (Tabuleiro[LastR-1][LastC].getBotLeft() == temp.getTopLeft())){
-                            //System.out.println("sou compativel EM CIMA");
-                            //System.out.println(Tabuleiro[LastR-1][LastC] + "" + temp );
-                            if(LastC == 0){
-                                //System.out.println("Vou meter uma peca na Coluna 0");
-                                Tabuleiro[LastR][LastC] = temp;
+                   
+                    if((Tabuleiro[LastR-1][LastC][2] == temp[1]) && (Tabuleiro[LastR-1][LastC][3] == temp[0])){
+                        //System.out.println("sou compativel EM CIMA");
+                        //System.out.println(Tabuleiro[LastR-1][LastC] + "" + temp );
+                        if(LastC == 0){
+                            //System.out.println("Vou meter uma peca na Coluna 0");
+                            Tabuleiro[LastR][LastC] = temp;
 
-                                PieceArray.get(tempCompatibleIndex).setPlaced();
-                                temp.setPlaced();
-                                //System.out.println("Vou enviar para a funcao de novo, Linha: " + LastR);
-                                //printPieces(Tabuleiro);
-                                int resultado = ComparePieces(temp, PieceArray ,Tabuleiro, LastR, LastC,compatibleKeys);
-                                if(resultado == 1){
-                                    return 1;
-                                }
-                                else{
-                                    PieceArray.get(tempCompatibleIndex).setNotPlaced();
-                                    temp.setNotPlaced();
-                                }
-                            }
+                            AllPiece[4][0] = 1;
                             
-                            else if((first.getTopRight() == temp.getTopLeft()) && (first.getBotRight() == temp.getBotLeft())){
-                                //System.out.println("Vou meter uma peca numa coluna normal");
-                                Tabuleiro[LastR][LastC] = temp;
-
-                                PieceArray.get(tempCompatibleIndex).setPlaced();
-                                temp.setPlaced();
-                                //System.out.println("estou a imprimir o R e o C antes de enviar para a proxima:\n" + LastR + " " + LastC);
-                                int resultado = ComparePieces(temp, PieceArray ,Tabuleiro, LastR, LastC,compatibleKeys);
-                                if(resultado == 1){
-                                    return 1;
-                                }
-                                else{
-                                    PieceArray.get(tempCompatibleIndex).setNotPlaced();
-                                    temp.setNotPlaced();
-                                }
+                            //System.out.println("Vou enviar para a funcao de novo, Linha: " + LastR);
+                            //printPieces(Tabuleiro);
+                            int resultado = ComparePieces(PieceArray.get(i), i, PieceArray ,Tabuleiro, LastR, LastC,compatibleKeys);
+                            if(resultado == 1){
+                                return 1;
                             }
-                           
+                            else{
+                                AllPiece[4][0] = 0;
+                                
+                            }
                         }
-                    }   
+
+                        else if((first[indexFirst][1] == temp[0]) && (first[indexFirst][2] == temp[3])){
+                            //System.out.println("Vou meter uma peca numa coluna normal");
+                            Tabuleiro[LastR][LastC] = temp;
+
+                            AllPiece[4][0] = 1;
+                            
+                            //System.out.println("estou a imprimir o R e o C antes de enviar para a proxima:\n" + LastR + " " + LastC);
+                            int resultado = ComparePieces(PieceArray.get(i), i, PieceArray ,Tabuleiro, LastR, LastC,compatibleKeys);
+                            if(resultado == 1){
+                                return 1;
+                            }
+                            else{
+                                AllPiece[4][0] = 1;
+                                
+                            }
+                        }
+
+                    }
+                       
                 }
                 
             }
@@ -316,11 +280,12 @@ public class Eapcpm {
     }
     
     public static void main(String[] args) {
-        ArrayList<Piece> PieceArray = new ArrayList<>();
+        ArrayList<int[][]> PieceArray = new ArrayList<>();
         HashMap<int[],ArrayList<Integer>> compatibleKeys = new HashMap<int[],ArrayList<Integer>>();
         int N = 0,R = 0,C = 0;
-        Piece[][] Tabuleiro;
-
+        
+        int[][][] Tabuleiro;
+        
         Scanner sc = new Scanner(System.in);
         String answer;
         answer = sc.nextLine();
@@ -354,10 +319,18 @@ public class Eapcpm {
             for (int j = 0; j < N; j++) {
                 answer = sc.nextLine();
                 answerArray = answer.split(" ");
-
+                int[] answerInt = new int[4];
                 try {
-                    PieceArray.add(new Piece(Integer.parseInt(answerArray[0]), Integer.parseInt(answerArray[1]),Integer.parseInt(answerArray[2]), Integer.parseInt(answerArray[3])));
-                    
+                    for(int num = 0; num<4; num++){
+                        answerInt[num] = Integer.parseInt(answerArray[num]);
+                    }
+                    int[][] temp = new int[5][4];
+                    temp[0] = answerInt;
+                    temp[1] = new int[]{answerInt[3],answerInt[0],answerInt[1],answerInt[2]};
+                    temp[2] = new int[]{answerInt[2],answerInt[3],answerInt[0],answerInt[1]};
+                    temp[3] = new int[]{answerInt[1],answerInt[2],answerInt[3],answerInt[0]};
+                    temp[4] = new int[]{0,0,0,0};
+                    PieceArray.add(temp);
                     
                 } catch (NumberFormatException ex) {
                 }
@@ -365,28 +338,29 @@ public class Eapcpm {
             
         
             
-            Piece FirstPiece = PieceArray.get(0);
+            int[][] FirstPiece = PieceArray.get(0);
           
-            Tabuleiro = new Piece[R][C];
-            Piece fill = new Piece(1,1,1,1);
-            for(int row = 0; row<Tabuleiro.length; row++){
-                for(int column = 0; column<Tabuleiro[0].length; column++){
+            Tabuleiro = new int[R][C][4];
+            int[] fill = new int[]{1,1,1,1};
+            for(int row = 0; row<R; row++){
+                for(int column = 0; column<C; column++){
                     Tabuleiro[row][column] = fill;
                 }
             }
-            Tabuleiro[0][0] = FirstPiece;
+            Tabuleiro[0][0] = FirstPiece[0];
             
-            FirstPiece.setPlaced();
+            FirstPiece[4][0] = 1;
             //System.out.println("First Piece of the game has been placed: \n" + Tabuleiro[0][0]);
             //Para sabermos onde vamos ter que colocar a proxima peca
             int LastPieceR = 0; 
             int LastPieceC = 0;
             
             
-            if(ComparePieces(FirstPiece, PieceArray, Tabuleiro,LastPieceR,LastPieceC,compatibleKeys) == 1){
+            if(ComparePieces(FirstPiece, 0, PieceArray, Tabuleiro,LastPieceR,LastPieceC,compatibleKeys) == 1){
                 printPieces(Tabuleiro);
             }
             else{
+                printPieces(Tabuleiro);
                 System.out.println("impossible puzzle!");
             }
             
